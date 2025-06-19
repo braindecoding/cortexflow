@@ -1,36 +1,21 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - test_reproducibility.py
-=========================================================================
+Test Reproducibility of CortexFlow CCCV1-CCCV4
+==============================================
 
-This script has been updated to ensure academic integrity compliance:
+Comprehensive reproducibility testing for all CCCV versions.
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
+Tests:
+1. Basic reproducibility (same results with same seed)
+2. Cross-validation reproducibility
+3. Dataset loading reproducibility
+4. Model initialization reproducibility
+5. Training reproducibility
 
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Usage:
+    python test_reproducibility.py --test all
+    python test_reproducibility.py --test basic
+    python test_reproducibility.py --test cccv4
 """
-
-
 
 import torch
 import numpy as np
@@ -47,13 +32,7 @@ from enhanced_reproducibility import setup_full_reproducibility, verify_dataset_
 
 # Import CCCV components
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data.loader import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data.loader import load_dataset_gpu_optimized
     from src.utils.config import set_reproducibility_seeds
 except ImportError as e:
     print(f"⚠️ Could not import core components: {e}")
@@ -139,11 +118,6 @@ def test_cccv4_reproducibility(dataset_name='miyawaki', seed=42, n_runs=3):
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
         X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
         
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
-        
         if X_train is None:
             print(f"❌ Failed to load {dataset_name}")
             return False
@@ -207,11 +181,6 @@ def test_cross_validation_reproducibility(dataset_name='miyawaki', seed=42):
         device = 'cpu'  # Use CPU for consistency
         X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
         
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
-        
         if X_train is None:
             print(f"❌ Failed to load {dataset_name}")
             return False
@@ -229,13 +198,7 @@ def test_cross_validation_reproducibility(dataset_name='miyawaki', seed=42):
             setup_full_reproducibility(seed=seed, strict_mode=True, save_report=False)
             
             # Create KFold
-            kfold = 
-            # ACADEMIC INTEGRITY: Cross-validation methodology
-            # - Preprocessing performed within each fold
-            # - Training fold statistics used for validation fold
-            # - No data leakage across folds
-            
-            KFold(n_splits=10, shuffle=True, random_state=seed)
+            kfold = KFold(n_splits=10, shuffle=True, random_state=seed)
             
             # Get fold splits
             splits = list(kfold.split(X_np))

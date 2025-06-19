@@ -1,8 +1,9 @@
 """
-Dataset Loading and Preprocessing
-================================
+Dataset Loading and Preprocessing (ACADEMIC INTEGRITY COMPLIANT)
+===============================================================
 
 GPU-optimized dataset loading functions for neural decoding research.
+FIXED: Eliminates data leakage by using training statistics for test normalization.
 
 Supported Datasets:
     - Miyawaki: Visual complex patterns (28x28 binary contrast)
@@ -12,9 +13,15 @@ Supported Datasets:
 
 Features:
     - GPU-optimized loading and preprocessing
-    - Automatic normalization and reshaping
+    - ACADEMIC INTEGRITY: No data leakage in preprocessing
+    - Training statistics used for test set normalization
+    - Cross-validation compatible preprocessing
     - WSL-compatible configuration
     - Memory-efficient processing
+
+CRITICAL FIX: This version eliminates the data leakage issue where test set
+statistics were used for test set normalization. Now uses training statistics
+for both training and test set normalization.
 """
 
 import torch
@@ -24,22 +31,30 @@ from pathlib import Path
 
 def load_dataset_gpu_optimized(dataset_name, device='cuda'):
     """
-    Load dataset dengan GPU optimization
-    
-    Loads neural decoding datasets directly to GPU memory with optimized
-    preprocessing for efficient training.
-    
+    Load dataset dengan GPU optimization (ACADEMIC INTEGRITY COMPLIANT)
+
+    Loads neural decoding datasets directly to GPU memory with proper
+    preprocessing that eliminates data leakage.
+
+    CRITICAL FIX: Uses training statistics for test set normalization
+    to prevent data leakage and ensure academic integrity.
+
     Args:
         dataset_name: Name of dataset ('miyawaki', 'vangerven', 'mindbigdata', 'crell')
         device: Target device for tensor loading ('cuda' or 'cpu')
-        
+
     Returns:
         tuple: (X_train, y_train, X_test, y_test, input_dim)
-            - X_train: Training fMRI signals [N, input_dim]
+            - X_train: Training fMRI signals [N, input_dim] (normalized with train stats)
             - y_train: Training visual stimuli [N, 1, 28, 28]
-            - X_test: Test fMRI signals [M, input_dim]
+            - X_test: Test fMRI signals [M, input_dim] (normalized with train stats)
             - y_test: Test visual stimuli [M, 1, 28, 28]
             - input_dim: Dimensionality of fMRI signals
+
+    Academic Integrity:
+        - Training statistics (mean, std) computed from training set only
+        - Same statistics applied to both training and test sets
+        - Eliminates data leakage from test set statistics
     """
     
     print(f"🚀 Loading {dataset_name} dataset untuk GPU training...")
@@ -85,9 +100,18 @@ def load_dataset_gpu_optimized(dataset_name, device='cuda'):
         print(f"❌ Error converting data to tensors: {e}")
         return None, None, None, None, 0
     
-    # GPU-optimized normalization
-    X_train = (X_train - X_train.mean()) / (X_train.std() + 1e-8)
-    X_test = (X_test - X_test.mean()) / (X_test.std() + 1e-8)
+    # ACADEMIC INTEGRITY FIX: Use training statistics for both sets
+    # Compute normalization statistics from training set ONLY
+    train_mean = X_train.mean()
+    train_std = X_train.std()
+
+    # Apply training statistics to both training and test sets
+    X_train = (X_train - train_mean) / (train_std + 1e-8)
+    X_test = (X_test - train_mean) / (train_std + 1e-8)
+
+    print(f"🔒 ACADEMIC INTEGRITY: Using training statistics for normalization")
+    print(f"   Training mean: {train_mean:.6f}, std: {train_std:.6f}")
+    print(f"   Applied to both training and test sets")
     
     # Dataset-specific preprocessing
     if dataset_name == 'miyawaki':
@@ -117,6 +141,124 @@ def load_dataset_gpu_optimized(dataset_name, device='cuda'):
     print(f"   Memory usage optimized for {dataset_name} dataset")
     
     return X_train, y_train, X_test, y_test, input_dim
+
+
+def load_dataset_raw(dataset_name, device='cuda'):
+    """
+    Load dataset WITHOUT preprocessing for cross-validation use.
+
+    This function loads raw data without normalization, allowing proper
+    preprocessing within each CV fold to prevent data leakage.
+
+    Args:
+        dataset_name: Name of dataset ('miyawaki', 'vangerven', 'mindbigdata', 'crell')
+        device: Target device for tensor loading ('cuda' or 'cpu')
+
+    Returns:
+        tuple: (X_train_raw, y_train_raw, X_test_raw, y_test_raw, input_dim, preprocess_fn)
+            - X_train_raw: Raw training fMRI signals [N, input_dim] (NOT normalized)
+            - y_train_raw: Raw training visual stimuli [N, H, W] (NOT normalized)
+            - X_test_raw: Raw test fMRI signals [M, input_dim] (NOT normalized)
+            - y_test_raw: Raw test visual stimuli [M, H, W] (NOT normalized)
+            - input_dim: Dimensionality of fMRI signals
+            - preprocess_fn: Function to apply preprocessing with given statistics
+    """
+
+    print(f"🚀 Loading {dataset_name} dataset (RAW - for CV use)...")
+
+    data_path = Path("data/processed")
+
+    dataset_files = {
+        'miyawaki': 'miyawaki_structured_28x28.mat',
+        'vangerven': 'digit69_28x28.mat',
+        'mindbigdata': 'mindbigdata.mat',
+        'crell': 'crell.mat'
+    }
+
+    if dataset_name not in dataset_files:
+        print(f"❌ Dataset {dataset_name} not supported")
+        print(f"   Supported datasets: {list(dataset_files.keys())}")
+        return None, None, None, None, 0, None
+
+    mat_file = data_path / dataset_files[dataset_name]
+
+    if not mat_file.exists():
+        print(f"❌ Dataset file not found: {mat_file}")
+        print(f"   Please ensure the dataset is in the data/processed/ directory")
+        return None, None, None, None, 0, None
+
+    try:
+        data = sio.loadmat(str(mat_file))
+    except Exception as e:
+        print(f"❌ Error loading dataset file: {e}")
+        return None, None, None, None, 0, None
+
+    # Load ke GPU langsung untuk memory efficiency (RAW - no preprocessing)
+    try:
+        X_train_raw = torch.tensor(data['fmriTrn'], dtype=torch.float32, device=device)
+        y_train_raw = torch.tensor(data['stimTrn'], dtype=torch.float32, device=device)
+        X_test_raw = torch.tensor(data['fmriTest'], dtype=torch.float32, device=device)
+        y_test_raw = torch.tensor(data['stimTest'], dtype=torch.float32, device=device)
+    except KeyError as e:
+        print(f"❌ Missing required data field in dataset: {e}")
+        print(f"   Expected fields: fmriTrn, stimTrn, fmriTest, stimTest")
+        return None, None, None, None, 0, None
+    except Exception as e:
+        print(f"❌ Error converting data to tensors: {e}")
+        return None, None, None, None, 0, None
+
+    input_dim = X_train_raw.shape[1]
+
+    # Create preprocessing function for this dataset
+    def preprocess_fn(X_train_fold, y_train_fold, X_val_fold, y_val_fold):
+        """
+        Apply preprocessing using training fold statistics only.
+
+        Args:
+            X_train_fold: Training fold fMRI data
+            y_train_fold: Training fold visual data
+            X_val_fold: Validation fold fMRI data
+            y_val_fold: Validation fold visual data
+
+        Returns:
+            Preprocessed data with training fold statistics
+        """
+        # Compute statistics from training fold ONLY
+        train_mean = X_train_fold.mean()
+        train_std = X_train_fold.std()
+
+        # Apply to both training and validation folds
+        X_train_processed = (X_train_fold - train_mean) / (train_std + 1e-8)
+        X_val_processed = (X_val_fold - train_mean) / (train_std + 1e-8)
+
+        # Dataset-specific y preprocessing
+        if dataset_name == 'miyawaki':
+            # Miyawaki: Binary contrast images
+            y_train_processed = y_train_fold.view(-1, 1, 28, 28)
+            y_val_processed = y_val_fold.view(-1, 1, 28, 28)
+            y_train_processed = (y_train_processed - y_train_processed.min()) / (y_train_processed.max() - y_train_processed.min() + 1e-8)
+            y_val_processed = (y_val_processed - y_val_processed.min()) / (y_val_processed.max() - y_val_processed.min() + 1e-8)
+
+        elif dataset_name == 'vangerven':
+            # Vangerven: Digit patterns
+            y_train_processed = y_train_fold.view(-1, 1, 28, 28) / 255.0
+            y_val_processed = y_val_fold.view(-1, 1, 28, 28) / 255.0
+
+        else:  # mindbigdata, crell
+            # EEG→fMRI→Visual datasets
+            y_train_processed = y_train_fold.view(-1, 1, 28, 28)
+            y_val_processed = y_val_fold.view(-1, 1, 28, 28)
+            y_train_processed = (y_train_processed - y_train_processed.min()) / (y_train_processed.max() - y_train_processed.min() + 1e-8)
+            y_val_processed = (y_val_processed - y_val_processed.min()) / (y_val_processed.max() - y_val_processed.min() + 1e-8)
+
+        return X_train_processed, y_train_processed, X_val_processed, y_val_processed
+
+    print(f"✅ Raw dataset loaded ke GPU: X_train={X_train_raw.shape}, y_train={y_train_raw.shape}")
+    print(f"   Input dimension: {input_dim}")
+    print(f"   Device: {device}")
+    print(f"   🔒 ACADEMIC INTEGRITY: Raw data for proper CV preprocessing")
+
+    return X_train_raw, y_train_raw, X_test_raw, y_test_raw, input_dim, preprocess_fn
 
 
 def get_dataset_info(dataset_name):

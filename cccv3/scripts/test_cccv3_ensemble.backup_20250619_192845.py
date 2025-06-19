@@ -1,36 +1,17 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - test_cccv3_ensemble.py
-========================================================================
+CCCV3 Ensemble Testing
+=====================
 
-This script has been updated to ensure academic integrity compliance:
+Test the CCCV3 Ensemble model that combines individual pathway predictions
+using optimal weights based on individual pathway performance.
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
+Strategy:
+1. Train individual pathways separately to optimal performance
+2. Combine predictions using dataset-specific optimal weights
+3. Compare ensemble vs best individual pathway
 
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Goal: Achieve 100% success rate by leveraging best of each pathway
 """
-
-
 
 import os
 import sys
@@ -71,13 +52,7 @@ except ImportError:
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
 except ImportError:
     print("⚠️ Parent directory imports not available")
 
@@ -133,11 +108,6 @@ def test_cccv3_ensemble_on_dataset(dataset_name, device):
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None

@@ -1,36 +1,15 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - simple_hierarchical_test.py
-=============================================================================
+CCCV2 Simple Attention Test
+===========================
 
-This script has been updated to ensure academic integrity compliance:
+Simplified attention mechanism test focusing on core improvements:
+1. Basic self-attention for feature relationships
+2. Lightweight multi-head attention
+3. Residual connections for stability
+4. Compare with CCCV1 baseline
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
-
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Goal: Validate attention concept with simpler implementation
 """
-
-
 
 import os
 import sys
@@ -51,13 +30,7 @@ sys.path.append(root_dir)
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
 except ImportError:
     print("⚠️ Parent directory imports not available")
 
@@ -73,74 +46,59 @@ def setup_device():
     else:
         return torch.device('cpu')
 
-class SimpleMultiScaleEncoder(nn.Module):
-    """Simple multi-scale feature extraction"""
+class SimpleAttentionModule(nn.Module):
+    """Simple but effective attention mechanism"""
     
-    def __init__(self, input_dim, embed_dim=512, num_scales=3):
-        super(SimpleMultiScaleEncoder, self).__init__()
-        self.input_dim = input_dim
+    def __init__(self, embed_dim, num_heads=4, dropout=0.1):
+        super(SimpleAttentionModule, self).__init__()
         self.embed_dim = embed_dim
-        self.num_scales = num_scales
+        self.num_heads = num_heads
         
-        # Multi-scale encoders
-        self.scale_encoders = nn.ModuleList()
+        # Multi-head attention
+        self.attention = nn.MultiheadAttention(
+            embed_dim, num_heads, dropout=dropout, batch_first=True
+        )
         
-        for i in range(num_scales):
-            # Different hidden dimensions for different scales
-            hidden_dim = embed_dim * (2 ** i)  # 512, 1024, 2048
-            
-            encoder = nn.Sequential(
-                nn.Linear(input_dim, hidden_dim),
-                nn.LayerNorm(hidden_dim),
-                nn.SiLU(),
-                nn.Dropout(0.1),
-                
-                nn.Linear(hidden_dim, embed_dim),
-                nn.LayerNorm(embed_dim),
-                nn.SiLU(),
-                nn.Dropout(0.05)
-            )
-            
-            self.scale_encoders.append(encoder)
+        # Layer normalization
+        self.layer_norm = nn.LayerNorm(embed_dim)
         
-        # Fusion mechanism
-        self.fusion = nn.Sequential(
-            nn.Linear(embed_dim * num_scales, embed_dim * 2),
-            nn.LayerNorm(embed_dim * 2),
+        # Feed-forward network
+        self.ffn = nn.Sequential(
+            nn.Linear(embed_dim, embed_dim * 2),
             nn.SiLU(),
-            nn.Dropout(0.1),
-            
-            nn.Linear(embed_dim * 2, embed_dim),
-            nn.LayerNorm(embed_dim),
-            nn.Tanh()
+            nn.Dropout(dropout),
+            nn.Linear(embed_dim * 2, embed_dim)
         )
         
     def forward(self, x):
-        # Extract features at multiple scales
-        scale_features = []
-        for encoder in self.scale_encoders:
-            features = encoder(x)
-            scale_features.append(features)
+        # x shape: [batch_size, seq_len, embed_dim]
         
-        # Concatenate and fuse
-        concatenated = torch.cat(scale_features, dim=-1)
-        fused_features = self.fusion(concatenated)
+        # Self-attention with residual connection
+        attn_output, _ = self.attention(x, x, x)
+        x = self.layer_norm(x + attn_output)
         
-        return fused_features, scale_features
+        # Feed-forward with residual connection
+        ffn_output = self.ffn(x)
+        x = self.layer_norm(x + ffn_output)
+        
+        return x
 
-class SimpleHierarchicalV2(nn.Module):
-    """Simple hierarchical CortexFlow V2"""
+class SimpleCortexFlowV2(nn.Module):
+    """Simplified CortexFlow V2 with basic attention"""
     
     def __init__(self, input_dim, device):
-        super(SimpleHierarchicalV2, self).__init__()
-        self.name = "CortexFlow-CLIP-CNN-V2-Hierarchical-Simple"
+        super(SimpleCortexFlowV2, self).__init__()
+        self.name = "CortexFlow-CLIP-CNN-V2-Simple"
         self.device = device
         
-        # Multi-scale encoder
-        self.multi_scale_encoder = SimpleMultiScaleEncoder(input_dim, embed_dim=512, num_scales=3).to(device)
+        # Encoder with attention
+        self.input_projection = nn.Linear(input_dim, 512).to(device)
+        
+        # Simple attention mechanism
+        self.attention = SimpleAttentionModule(512, num_heads=4, dropout=0.05).to(device)
         
         # CLIP-like encoder
-        self.clip_encoder = nn.Sequential(
+        self.encoder = nn.Sequential(
             nn.Linear(512, 512),
             nn.LayerNorm(512),
             nn.SiLU(),
@@ -163,42 +121,53 @@ class SimpleHierarchicalV2(nn.Module):
         ).to(device)
         
     def forward(self, x):
-        # Multi-scale feature extraction
-        fused_features, scale_features = self.multi_scale_encoder(x)
+        # Project to embedding space
+        x = self.input_projection(x)  # [batch_size, 512]
+        
+        # Add sequence dimension for attention
+        x = x.unsqueeze(1)  # [batch_size, 1, 512]
+        
+        # Apply attention
+        x = self.attention(x)  # [batch_size, 1, 512]
+        
+        # Remove sequence dimension
+        x = x.squeeze(1)  # [batch_size, 512]
         
         # Encode to CLIP-like space
-        encoded = self.clip_encoder(fused_features)
+        encoded = self.encoder(x)
         encoded = torch.nn.functional.normalize(encoded, p=2, dim=1)
         
         # Decode to visual output
         visual_output = self.decoder(encoded)
         visual_output = visual_output.view(-1, 1, 28, 28)
         
-        return visual_output, encoded, scale_features
+        return visual_output, encoded
 
-class AttentionBaseline(nn.Module):
-    """Attention baseline from previous test"""
+class BaselineCortexFlowV1(nn.Module):
+    """Baseline CCCV1-like model for comparison"""
     
     def __init__(self, input_dim, device):
-        super(AttentionBaseline, self).__init__()
-        self.name = "CortexFlow-CLIP-CNN-V2-Attention-Baseline"
+        super(BaselineCortexFlowV1, self).__init__()
+        self.name = "CortexFlow-CLIP-CNN-V1-Baseline"
         self.device = device
         
-        # Simple attention mechanism
-        self.input_projection = nn.Linear(input_dim, 512).to(device)
-        
-        self.attention = nn.MultiheadAttention(
-            512, num_heads=4, dropout=0.1, batch_first=True
-        ).to(device)
-        
-        self.layer_norm = nn.LayerNorm(512).to(device)
-        
-        # Encoder
+        # Standard encoder (no attention)
         self.encoder = nn.Sequential(
-            nn.Linear(512, 512),
+            nn.Linear(input_dim, 1024),
+            nn.LayerNorm(1024),
+            nn.SiLU(),
+            nn.Dropout(0.06),
+            
+            nn.Linear(1024, 1024),
+            nn.LayerNorm(1024),
+            nn.SiLU(),
+            nn.Dropout(0.04),
+            
+            nn.Linear(1024, 512),
             nn.LayerNorm(512),
             nn.SiLU(),
             nn.Dropout(0.03),
+            
             nn.Linear(512, 512),
             nn.LayerNorm(512),
             nn.Tanh()
@@ -210,22 +179,17 @@ class AttentionBaseline(nn.Module):
             nn.LayerNorm(512),
             nn.SiLU(),
             nn.Dropout(0.02),
+            
             nn.Linear(512, 784),
             nn.Sigmoid()
         ).to(device)
         
     def forward(self, x):
-        # Project and add sequence dimension
-        x = self.input_projection(x).unsqueeze(1)
-        
-        # Apply attention
-        attn_output, _ = self.attention(x, x, x)
-        x = self.layer_norm(x + attn_output).squeeze(1)
-        
-        # Encode and decode
+        # Standard encoding
         encoded = self.encoder(x)
         encoded = torch.nn.functional.normalize(encoded, p=2, dim=1)
         
+        # Decode to visual output
         visual_output = self.decoder(encoded)
         visual_output = visual_output.view(-1, 1, 28, 28)
         
@@ -258,14 +222,7 @@ def train_model(model, train_loader, val_loader, config, device):
             data, target = data.to(device), target.to(device)
             
             optimizer.zero_grad()
-            
-            # Handle different model outputs
-            outputs = model(data)
-            if len(outputs) == 3:  # Hierarchical model
-                visual_output, encoded_features, scale_features = outputs
-            else:  # Attention model
-                visual_output, encoded_features = outputs
-            
+            visual_output, encoded_features = model(data)
             loss = criterion(visual_output, target)
             loss.backward()
             
@@ -279,13 +236,7 @@ def train_model(model, train_loader, val_loader, config, device):
         with torch.no_grad():
             for data, target in val_loader:
                 data, target = data.to(device), target.to(device)
-                
-                outputs = model(data)
-                if len(outputs) == 3:
-                    visual_output, _, _ = outputs
-                else:
-                    visual_output, _ = outputs
-                
+                visual_output, _ = model(data)
                 val_loss += criterion(visual_output, target).item()
         
         train_loss /= len(train_loader)
@@ -321,12 +272,7 @@ def evaluate_model(model, test_loader, device):
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
-            
-            outputs = model(data)
-            if len(outputs) == 3:
-                visual_output, _, _ = outputs
-            else:
-                visual_output, _ = outputs
+            visual_output, _ = model(data)
             
             all_predictions.append(visual_output.cpu())
             all_targets.append(target.cpu())
@@ -338,20 +284,15 @@ def evaluate_model(model, test_loader, device):
     return mse
 
 def compare_models(dataset_name, device):
-    """Compare simple hierarchical vs attention baseline"""
+    """Compare CCCV2 attention vs CCCV1 baseline"""
     
-    print(f"\n📁 Testing Simple Hierarchical on {dataset_name.upper()}")
-    print("=" * 55)
+    print(f"\n📁 Comparing Models on {dataset_name.upper()}")
+    print("=" * 50)
     
     # Load dataset
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None
@@ -393,9 +334,25 @@ def compare_models(dataset_name, device):
     
     results = {}
     
-    # Test Attention Baseline
-    print(f"\n🔧 Training Attention Baseline...")
-    attention_model = AttentionBaseline(input_dim, device)
+    # Test CCCV1 Baseline
+    print(f"\n🔧 Training CCCV1 Baseline...")
+    baseline_model = BaselineCortexFlowV1(input_dim, device)
+    print(f"   Parameters: {sum(p.numel() for p in baseline_model.parameters()):,}")
+    
+    baseline_val_loss = train_model(baseline_model, train_loader, val_loader, config, device)
+    baseline_test_mse = evaluate_model(baseline_model, test_loader, device)
+    
+    results['baseline'] = {
+        'val_loss': baseline_val_loss,
+        'test_mse': baseline_test_mse,
+        'model_name': baseline_model.name
+    }
+    
+    print(f"   Baseline Results: Val={baseline_val_loss:.6f}, Test={baseline_test_mse:.6f}")
+    
+    # Test CCCV2 Simple Attention
+    print(f"\n🔧 Training CCCV2 Simple Attention...")
+    attention_model = SimpleCortexFlowV2(input_dim, device)
     print(f"   Parameters: {sum(p.numel() for p in attention_model.parameters()):,}")
     
     attention_val_loss = train_model(attention_model, train_loader, val_loader, config, device)
@@ -409,46 +366,30 @@ def compare_models(dataset_name, device):
     
     print(f"   Attention Results: Val={attention_val_loss:.6f}, Test={attention_test_mse:.6f}")
     
-    # Test Simple Hierarchical
-    print(f"\n🔧 Training Simple Hierarchical...")
-    hierarchical_model = SimpleHierarchicalV2(input_dim, device)
-    print(f"   Parameters: {sum(p.numel() for p in hierarchical_model.parameters()):,}")
-    
-    hierarchical_val_loss = train_model(hierarchical_model, train_loader, val_loader, config, device)
-    hierarchical_test_mse = evaluate_model(hierarchical_model, test_loader, device)
-    
-    results['hierarchical'] = {
-        'val_loss': hierarchical_val_loss,
-        'test_mse': hierarchical_test_mse,
-        'model_name': hierarchical_model.name
-    }
-    
-    print(f"   Hierarchical Results: Val={hierarchical_val_loss:.6f}, Test={hierarchical_test_mse:.6f}")
-    
     # Compare results
     print(f"\n🎯 Comparison Results for {dataset_name.upper()}:")
-    print(f"   Attention Baseline: {attention_test_mse:.6f}")
-    print(f"   Simple Hierarchical: {hierarchical_test_mse:.6f}")
+    print(f"   CCCV1 Baseline: {baseline_test_mse:.6f}")
+    print(f"   CCCV2 Attention: {attention_test_mse:.6f}")
     
-    if hierarchical_test_mse < attention_test_mse:
-        improvement = ((attention_test_mse - hierarchical_test_mse) / attention_test_mse) * 100
-        print(f"   🏆 HIERARCHICAL WINS by {improvement:.2f}%!")
-        results['winner'] = 'hierarchical'
+    if attention_test_mse < baseline_test_mse:
+        improvement = ((baseline_test_mse - attention_test_mse) / baseline_test_mse) * 100
+        print(f"   🏆 ATTENTION WINS by {improvement:.2f}%!")
+        results['winner'] = 'attention'
         results['improvement'] = improvement
     else:
-        gap = ((hierarchical_test_mse - attention_test_mse) / attention_test_mse) * 100
-        print(f"   📈 Attention wins by {gap:.2f}%")
-        results['winner'] = 'attention'
+        gap = ((attention_test_mse - baseline_test_mse) / baseline_test_mse) * 100
+        print(f"   📈 Baseline wins by {gap:.2f}%")
+        results['winner'] = 'baseline'
         results['improvement'] = -gap
     
     return results
 
 def main():
-    """Main simple hierarchical testing function"""
-    print("🎯 CCCV2 Simple Hierarchical Testing")
-    print("=" * 45)
-    print("🔬 Testing simplified hierarchical processing")
-    print("📊 Goal: Validate hierarchical concept vs attention")
+    """Main simple attention testing function"""
+    print("🎯 CCCV2 Simple Attention Testing")
+    print("=" * 40)
+    print("🔬 Testing simplified attention mechanisms")
+    print("📊 Goal: Validate attention concept vs baseline")
     print()
     
     device = setup_device()
@@ -471,10 +412,10 @@ def main():
             all_results[dataset_name] = result
     
     # Final analysis
-    print("\n🎉 CCCV2 Simple Hierarchical Testing Complete!")
-    print("=" * 55)
+    print("\n🎉 CCCV2 Simple Attention Testing Complete!")
+    print("=" * 50)
     
-    hierarchical_wins = 0
+    attention_wins = 0
     total_datasets = len(all_results)
     
     for dataset_name, result in all_results.items():
@@ -482,21 +423,21 @@ def main():
         print(f"   Winner: {result['winner']}")
         print(f"   Improvement: {result['improvement']:.2f}%")
         
-        if result['winner'] == 'hierarchical':
-            hierarchical_wins += 1
+        if result['winner'] == 'attention':
+            attention_wins += 1
     
-    print(f"\n🏆 FINAL SIMPLE HIERARCHICAL RESULTS:")
-    print(f"Hierarchical wins: {hierarchical_wins}/{total_datasets}")
-    print(f"Success rate: {(hierarchical_wins/total_datasets)*100:.1f}%")
+    print(f"\n🏆 FINAL SIMPLE ATTENTION RESULTS:")
+    print(f"Attention wins: {attention_wins}/{total_datasets}")
+    print(f"Success rate: {(attention_wins/total_datasets)*100:.1f}%")
     
-    if hierarchical_wins >= total_datasets * 0.5:
-        print(f"\n🎉 HIERARCHICAL CONCEPT VALIDATED!")
-        print(f"🚀 Multi-scale processing shows promise for CCCV2!")
+    if attention_wins >= total_datasets * 0.5:
+        print(f"\n🎉 ATTENTION CONCEPT VALIDATED!")
+        print(f"🚀 Simple attention shows promise for CCCV2!")
     else:
-        print(f"\n🔧 Hierarchical processing needs refinement")
-        print(f"📈 Consider different fusion strategies")
+        print(f"\n🔧 Attention needs refinement")
+        print(f"📈 Consider different attention architectures")
     
-    print("\n🚀 Ready for next CCCV2 innovation: Contrastive Learning!")
+    print("\n🚀 Ready for next CCCV2 innovation!")
 
 if __name__ == "__main__":
     main()

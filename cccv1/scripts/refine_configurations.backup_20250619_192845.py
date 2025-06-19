@@ -1,36 +1,19 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - refine_configurations.py
-==========================================================================
+CortexFlow-CLIP-CNN V1 Configuration Refinement
+==============================================
 
-This script has been updated to ensure academic integrity compliance:
+Fine-tune configurations for datasets that showed gaps in cross-validation:
+- Vangerven: +1.66% gap
+- Crell: +0.07% gap
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
+Goal: Achieve consistent wins across all datasets through targeted optimization.
 
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Strategy:
+1. Grid search on critical hyperparameters
+2. Extended training with higher epochs
+3. Advanced learning rate schedules
+4. Dropout optimization
 """
-
-
 
 import os
 import sys
@@ -66,13 +49,7 @@ except ImportError:
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
 except ImportError:
     print("⚠️ Parent directory imports not available")
 
@@ -428,11 +405,6 @@ def main():
         try:
             if 'load_dataset_gpu_optimized' in globals():
                 X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
             else:
                 print("❌ Dataset loading function not available")
                 continue

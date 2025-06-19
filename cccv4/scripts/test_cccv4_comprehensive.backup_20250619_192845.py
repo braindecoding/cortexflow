@@ -1,36 +1,18 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - test_cccv4_comprehensive.py
-=============================================================================
+CCCV4 Meta-Adaptive Comprehensive Testing
+=========================================
 
-This script has been updated to ensure academic integrity compliance:
+Comprehensive 10-fold cross-validation testing of CCCV4 Meta-Adaptive model
+that automatically selects optimal CCCV version per dataset.
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
+Expected Results:
+- Miyawaki: Select CCCV3, achieve ~0.004474 MSE
+- Vangerven: Select CCCV1, achieve ~0.036487 MSE  
+- MindBigData: Select CCCV3, achieve ~0.056162 MSE
+- Crell: Select CCCV2, achieve ~0.032058 MSE
 
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Goal: Prove meta-adaptive selection achieves optimal performance
 """
-
-
 
 import os
 import sys
@@ -81,13 +63,7 @@ except ImportError as e:
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
 except ImportError:
     print("⚠️ Parent directory imports not available")
 
@@ -173,11 +149,6 @@ def test_cccv4_on_dataset(dataset_name, device, n_folds=10):
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None
@@ -214,13 +185,7 @@ def test_cccv4_on_dataset(dataset_name, device, n_folds=10):
     torch.cuda.empty_cache()
     
     # 10-fold cross-validation
-    kfold = 
-            # ACADEMIC INTEGRITY: Cross-validation methodology
-            # - Preprocessing performed within each fold
-            # - Training fold statistics used for validation fold
-            # - No data leakage across folds
-            
-            KFold(n_splits=n_folds, shuffle=True, random_state=42)
+    kfold = KFold(n_splits=n_folds, shuffle=True, random_state=42)
     
     config = {
         'epochs': 80,  # Balanced for comprehensive testing

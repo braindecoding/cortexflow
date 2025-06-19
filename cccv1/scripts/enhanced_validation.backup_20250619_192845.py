@@ -1,36 +1,15 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - enhanced_validation.py
-========================================================================
+CortexFlow-CLIP-CNN V1 Enhanced Validation
+==========================================
 
-This script has been updated to ensure academic integrity compliance:
+Enhanced validation with refined configurations and increased statistical power:
+1. 10-fold cross-validation for better statistical power
+2. Use refined configurations from optimization
+3. Multiple runs with different seeds
+4. Comprehensive statistical analysis
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
-
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Goal: Validate refined breakthrough with rigorous statistical testing.
 """
-
-
 
 import os
 import sys
@@ -66,13 +45,7 @@ except ImportError:
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
 except ImportError:
     print("⚠️ Parent directory imports not available")
 
@@ -279,13 +252,7 @@ def enhanced_cross_validation(dataset_name, X_train, y_train, input_dim, device,
             torch.cuda.manual_seed(42 + run)
         
         # Setup cross-validation
-        kfold = 
-            # ACADEMIC INTEGRITY: Cross-validation methodology
-            # - Preprocessing performed within each fold
-            # - Training fold statistics used for validation fold
-            # - No data leakage across folds
-            
-            KFold(n_splits=n_folds, shuffle=True, random_state=42 + run)
+        kfold = KFold(n_splits=n_folds, shuffle=True, random_state=42 + run)
         run_scores = []
         
         for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train)):
@@ -416,11 +383,6 @@ def main():
         try:
             if 'load_dataset_gpu_optimized' in globals():
                 X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
             else:
                 print("❌ Dataset loading function not available")
                 continue

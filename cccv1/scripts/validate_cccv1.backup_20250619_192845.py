@@ -1,36 +1,20 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - validate_cccv1.py
-===================================================================
+CortexFlow-CLIP-CNN V1 Cross-Validation Testing
+==============================================
 
-This script has been updated to ensure academic integrity compliance:
+Next step: Validate breakthrough results dengan rigorous cross-validation
+untuk statistical significance dan reproducibility.
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
+Goals:
+1. 5-fold cross-validation pada all datasets
+2. Statistical significance testing
+3. Reproducibility validation
+4. Performance consistency analysis
 
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Usage:
+    python validate_cccv1.py --dataset miyawaki --folds 5
+    python validate_cccv1.py --dataset all --folds 5 --statistical_test
 """
-
-
 
 import os
 import sys
@@ -73,13 +57,7 @@ except ImportError:
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
     from src.evaluation.metrics import calculate_comprehensive_metrics
 except ImportError:
     print("⚠️ Parent directory imports not available. Using local implementations.")
@@ -220,13 +198,7 @@ def cross_validate_cccv1(dataset_name, X_train, y_train, input_dim, device, n_fo
     config = load_optimal_config(dataset_name)
     
     # Setup cross-validation
-    kfold = 
-            # ACADEMIC INTEGRITY: Cross-validation methodology
-            # - Preprocessing performed within each fold
-            # - Training fold statistics used for validation fold
-            # - No data leakage across folds
-            
-            KFold(n_splits=n_folds, shuffle=True, random_state=42)
+    kfold = KFold(n_splits=n_folds, shuffle=True, random_state=42)
     cv_scores = []
     
     for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train)):
@@ -318,11 +290,6 @@ def validate_single_dataset(dataset_name, device, n_folds=5, statistical_test=Tr
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None

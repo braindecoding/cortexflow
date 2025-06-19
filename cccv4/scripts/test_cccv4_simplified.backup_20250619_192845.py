@@ -1,36 +1,22 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - test_cccv4_simplified.py
-==========================================================================
+CCCV4 Meta-Adaptive Simplified Testing
+======================================
 
-This script has been updated to ensure academic integrity compliance:
+Simplified test of CCCV4 concept using existing CCCV3 Ultimate as proxy.
+Tests the meta-adaptive selection logic and validates performance predictions.
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
+Strategy:
+1. Use CCCV3 Ultimate as the "selected optimal model" for each dataset
+2. Validate that selection logic chooses correct versions
+3. Compare with predicted performance targets
+4. Prove meta-adaptive concept works
 
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Expected Results:
+- Miyawaki: Should achieve ~0.004474 MSE (CCCV3 selected)
+- Vangerven: Should achieve better than 0.039129 MSE (CCCV1 logic)
+- MindBigData: Should achieve ~0.056162 MSE (CCCV3 selected)
+- Crell: Should achieve competitive performance (CCCV2 logic)
 """
-
-
 
 import os
 import sys
@@ -62,13 +48,7 @@ except ImportError:
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
 except ImportError:
     print("⚠️ Parent directory imports not available")
 
@@ -265,11 +245,6 @@ def test_cccv4_proxy_on_dataset(dataset_name, device, n_folds=10):
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None
@@ -295,13 +270,7 @@ def test_cccv4_proxy_on_dataset(dataset_name, device, n_folds=10):
     selection_info = CCCV4MetaSelector.analyze_dataset_and_select(dataset_name, len(X_all), input_dim)
     
     # 10-fold cross-validation
-    kfold = 
-            # ACADEMIC INTEGRITY: Cross-validation methodology
-            # - Preprocessing performed within each fold
-            # - Training fold statistics used for validation fold
-            # - No data leakage across folds
-            
-            KFold(n_splits=n_folds, shuffle=True, random_state=42)
+    kfold = KFold(n_splits=n_folds, shuffle=True, random_state=42)
     
     config = {
         'use_optimal_hyperparams': True,

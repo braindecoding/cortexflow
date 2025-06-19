@@ -1,36 +1,16 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - test_crell_optimization.py
-============================================================================
+Crell Dataset Optimization Test
+==============================
 
-This script has been updated to ensure academic integrity compliance:
+Quick test to see if CCCV3 strategy would improve Crell visual quality
+compared to current CCCV2 selection.
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
+Current Crell Results:
+- CCCV2 (Selected): SSIM 0.5046, MSE 0.035859
+- Goal: Test CCCV3 to see if we can achieve SSIM > 0.7
 
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Strategy: Force CCCV3 selection for Crell and compare visual quality
 """
-
-
 
 import os
 import sys
@@ -51,13 +31,7 @@ sys.path.append(parent_dir)
 # Import models
 try:
     from cccv3.src.models.cccv3_ultimate import create_cccv3_ultimate, create_cccv3_ultimate_trainer
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
 except ImportError:
     print("❌ Could not import required models")
     sys.exit(1)
@@ -108,11 +82,6 @@ def test_crell_with_cccv3():
     
     # Load Crell dataset
     X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized('crell', device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
     dataset_size = len(X_train)
     
     print(f"✅ Crell loaded: Train={dataset_size}, Test={len(X_test)}, Input_dim={input_dim}")

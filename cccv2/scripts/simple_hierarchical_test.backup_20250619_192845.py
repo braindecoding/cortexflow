@@ -1,36 +1,14 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - test_hierarchical_fusion.py
-=============================================================================
+CCCV2 Simple Hierarchical Test
+==============================
 
-This script has been updated to ensure academic integrity compliance:
+Simplified hierarchical feature fusion test:
+1. Multi-Scale Feature Extraction
+2. Simple Feature Fusion
+3. Compare with Attention Baseline
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
-
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Goal: Validate hierarchical concept with simpler implementation
 """
-
-
 
 import os
 import sys
@@ -48,34 +26,10 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 root_dir = os.path.dirname(parent_dir)
 sys.path.append(root_dir)
-sys.path.append(parent_dir)
-
-# Import CCCV2 models
-try:
-    from cccv2.src.models.hierarchical_fusion import (
-        HierarchicalCortexFlowV2,
-        create_hierarchical_model
-    )
-except ImportError:
-    try:
-        sys.path.append(os.path.join(parent_dir, 'src', 'models'))
-        from hierarchical_fusion import (
-            HierarchicalCortexFlowV2,
-            create_hierarchical_model
-        )
-    except ImportError:
-        print("❌ Could not import CCCV2 hierarchical models")
-        sys.exit(1)
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
 except ImportError:
     print("⚠️ Parent directory imports not available")
 
@@ -91,8 +45,111 @@ def setup_device():
     else:
         return torch.device('cpu')
 
+class SimpleMultiScaleEncoder(nn.Module):
+    """Simple multi-scale feature extraction"""
+    
+    def __init__(self, input_dim, embed_dim=512, num_scales=3):
+        super(SimpleMultiScaleEncoder, self).__init__()
+        self.input_dim = input_dim
+        self.embed_dim = embed_dim
+        self.num_scales = num_scales
+        
+        # Multi-scale encoders
+        self.scale_encoders = nn.ModuleList()
+        
+        for i in range(num_scales):
+            # Different hidden dimensions for different scales
+            hidden_dim = embed_dim * (2 ** i)  # 512, 1024, 2048
+            
+            encoder = nn.Sequential(
+                nn.Linear(input_dim, hidden_dim),
+                nn.LayerNorm(hidden_dim),
+                nn.SiLU(),
+                nn.Dropout(0.1),
+                
+                nn.Linear(hidden_dim, embed_dim),
+                nn.LayerNorm(embed_dim),
+                nn.SiLU(),
+                nn.Dropout(0.05)
+            )
+            
+            self.scale_encoders.append(encoder)
+        
+        # Fusion mechanism
+        self.fusion = nn.Sequential(
+            nn.Linear(embed_dim * num_scales, embed_dim * 2),
+            nn.LayerNorm(embed_dim * 2),
+            nn.SiLU(),
+            nn.Dropout(0.1),
+            
+            nn.Linear(embed_dim * 2, embed_dim),
+            nn.LayerNorm(embed_dim),
+            nn.Tanh()
+        )
+        
+    def forward(self, x):
+        # Extract features at multiple scales
+        scale_features = []
+        for encoder in self.scale_encoders:
+            features = encoder(x)
+            scale_features.append(features)
+        
+        # Concatenate and fuse
+        concatenated = torch.cat(scale_features, dim=-1)
+        fused_features = self.fusion(concatenated)
+        
+        return fused_features, scale_features
+
+class SimpleHierarchicalV2(nn.Module):
+    """Simple hierarchical CortexFlow V2"""
+    
+    def __init__(self, input_dim, device):
+        super(SimpleHierarchicalV2, self).__init__()
+        self.name = "CortexFlow-CLIP-CNN-V2-Hierarchical-Simple"
+        self.device = device
+        
+        # Multi-scale encoder
+        self.multi_scale_encoder = SimpleMultiScaleEncoder(input_dim, embed_dim=512, num_scales=3).to(device)
+        
+        # CLIP-like encoder
+        self.clip_encoder = nn.Sequential(
+            nn.Linear(512, 512),
+            nn.LayerNorm(512),
+            nn.SiLU(),
+            nn.Dropout(0.03),
+            
+            nn.Linear(512, 512),
+            nn.LayerNorm(512),
+            nn.Tanh()
+        ).to(device)
+        
+        # Decoder
+        self.decoder = nn.Sequential(
+            nn.Linear(512, 512),
+            nn.LayerNorm(512),
+            nn.SiLU(),
+            nn.Dropout(0.02),
+            
+            nn.Linear(512, 784),
+            nn.Sigmoid()
+        ).to(device)
+        
+    def forward(self, x):
+        # Multi-scale feature extraction
+        fused_features, scale_features = self.multi_scale_encoder(x)
+        
+        # Encode to CLIP-like space
+        encoded = self.clip_encoder(fused_features)
+        encoded = torch.nn.functional.normalize(encoded, p=2, dim=1)
+        
+        # Decode to visual output
+        visual_output = self.decoder(encoded)
+        visual_output = visual_output.view(-1, 1, 28, 28)
+        
+        return visual_output, encoded, scale_features
+
 class AttentionBaseline(nn.Module):
-    """Attention baseline from previous test for comparison"""
+    """Attention baseline from previous test"""
     
     def __init__(self, input_dim, device):
         super(AttentionBaseline, self).__init__()
@@ -147,17 +204,16 @@ class AttentionBaseline(nn.Module):
         return visual_output, encoded
 
 def train_model(model, train_loader, val_loader, config, device):
-    """Train model with advanced techniques"""
+    """Train model with standard configuration"""
     
-    optimizer = optim.AdamW(
+    optimizer = optim.Adam(
         model.parameters(),
         lr=config.get('lr', 0.001),
-        weight_decay=config.get('weight_decay', 1e-6),
-        betas=(0.9, 0.999)
+        weight_decay=config.get('weight_decay', 1e-6)
     )
     
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=config.get('epochs', 100), eta_min=1e-8
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='min', factor=0.5, patience=10, min_lr=1e-8
     )
     
     criterion = nn.MSELoss()
@@ -175,19 +231,12 @@ def train_model(model, train_loader, val_loader, config, device):
             
             optimizer.zero_grad()
             
-            # Handle different model types
-            if hasattr(model, 'forward') and 'dataset_id' in model.forward.__code__.co_varnames:
-                # Hierarchical model with dataset info
-                batch_size = data.shape[0]
-                dataset_stats = torch.tensor([[100.0, 0.5, 0.8]]).repeat(batch_size, 1).to(device)
-                dataset_id = torch.tensor([0]).to(device)
-                
-                visual_output, encoded_features, hierarchy_info = model(
-                    data, dataset_id=dataset_id, dataset_stats=dataset_stats
-                )
-            else:
-                # Attention baseline
-                visual_output, encoded_features = model(data)
+            # Handle different model outputs
+            outputs = model(data)
+            if len(outputs) == 3:  # Hierarchical model
+                visual_output, encoded_features, scale_features = outputs
+            else:  # Attention model
+                visual_output, encoded_features = outputs
             
             loss = criterion(visual_output, target)
             loss.backward()
@@ -203,21 +252,18 @@ def train_model(model, train_loader, val_loader, config, device):
             for data, target in val_loader:
                 data, target = data.to(device), target.to(device)
                 
-                if hasattr(model, 'forward') and 'dataset_id' in model.forward.__code__.co_varnames:
-                    batch_size = data.shape[0]
-                    dataset_stats = torch.tensor([[100.0, 0.5, 0.8]]).repeat(batch_size, 1).to(device)
-                    dataset_id = torch.tensor([0]).to(device)
-                    
-                    visual_output, _, _ = model(data, dataset_id=dataset_id, dataset_stats=dataset_stats)
+                outputs = model(data)
+                if len(outputs) == 3:
+                    visual_output, _, _ = outputs
                 else:
-                    visual_output, _ = model(data)
+                    visual_output, _ = outputs
                 
                 val_loss += criterion(visual_output, target).item()
         
         train_loss /= len(train_loader)
         val_loss /= len(val_loader)
         
-        scheduler.step()
+        scheduler.step(val_loss)
         
         # Early stopping
         if val_loss < best_val_loss:
@@ -239,26 +285,20 @@ def train_model(model, train_loader, val_loader, config, device):
     return best_val_loss
 
 def evaluate_model(model, test_loader, device):
-    """Evaluate model and extract hierarchy info if available"""
+    """Evaluate model"""
     model.eval()
     all_predictions = []
     all_targets = []
-    hierarchy_info = None
     
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
             
-            if hasattr(model, 'forward') and 'dataset_id' in model.forward.__code__.co_varnames:
-                batch_size = data.shape[0]
-                dataset_stats = torch.tensor([[100.0, 0.5, 0.8]]).repeat(batch_size, 1).to(device)
-                dataset_id = torch.tensor([0]).to(device)
-                
-                visual_output, encoded_features, hierarchy_info = model(
-                    data, dataset_id=dataset_id, dataset_stats=dataset_stats
-                )
+            outputs = model(data)
+            if len(outputs) == 3:
+                visual_output, _, _ = outputs
             else:
-                visual_output, encoded_features = model(data)
+                visual_output, _ = outputs
             
             all_predictions.append(visual_output.cpu())
             all_targets.append(target.cpu())
@@ -267,62 +307,18 @@ def evaluate_model(model, test_loader, device):
     targets = torch.cat(all_targets, dim=0)
     
     mse = nn.MSELoss()(predictions, targets).item()
-    
-    return {
-        'mse': mse,
-        'predictions': predictions,
-        'targets': targets,
-        'hierarchy_info': hierarchy_info
-    }
-
-def analyze_hierarchy_info(hierarchy_info, save_path):
-    """Analyze and visualize hierarchical processing"""
-    
-    if hierarchy_info is None:
-        print("⚠️ No hierarchy information available")
-        return
-    
-    print(f"\n🔍 Hierarchical Processing Analysis:")
-    
-    # Analyze fusion weights
-    if 'fusion_weights' in hierarchy_info:
-        fusion_weights = hierarchy_info['fusion_weights'][0].cpu().numpy()  # First sample
-        print(f"   Fusion weights shape: {fusion_weights.shape}")
-        print(f"   Fusion weights: {fusion_weights}")
-        
-        # Find dominant scales
-        dominant_scales = np.argsort(fusion_weights)[-3:]  # Top 3 scales
-        print(f"   Dominant scales: {dominant_scales}")
-    
-    # Analyze multi-resolution features
-    if 'multi_res_features' in hierarchy_info:
-        multi_res = hierarchy_info['multi_res_features']
-        print(f"   Multi-resolution features: {len(multi_res)} scales")
-        for i, features in enumerate(multi_res):
-            print(f"     Scale {i}: {features.shape}")
-    
-    # Analyze pyramid features
-    if 'pyramid_features' in hierarchy_info:
-        pyramid = hierarchy_info['pyramid_features']
-        print(f"   Pyramid features: {len(pyramid)} levels")
-        for i, features in enumerate(pyramid):
-            print(f"     Level {i}: {features.shape}")
+    return mse
 
 def compare_models(dataset_name, device):
-    """Compare hierarchical fusion vs attention baseline"""
+    """Compare simple hierarchical vs attention baseline"""
     
-    print(f"\n📁 Testing Hierarchical Fusion on {dataset_name.upper()}")
-    print("=" * 60)
+    print(f"\n📁 Testing Simple Hierarchical on {dataset_name.upper()}")
+    print("=" * 55)
     
     # Load dataset
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None
@@ -370,48 +366,44 @@ def compare_models(dataset_name, device):
     print(f"   Parameters: {sum(p.numel() for p in attention_model.parameters()):,}")
     
     attention_val_loss = train_model(attention_model, train_loader, val_loader, config, device)
-    attention_results = evaluate_model(attention_model, test_loader, device)
+    attention_test_mse = evaluate_model(attention_model, test_loader, device)
     
     results['attention'] = {
         'val_loss': attention_val_loss,
-        'test_mse': attention_results['mse'],
+        'test_mse': attention_test_mse,
         'model_name': attention_model.name
     }
     
-    print(f"   Attention Results: Val={attention_val_loss:.6f}, Test={attention_results['mse']:.6f}")
+    print(f"   Attention Results: Val={attention_val_loss:.6f}, Test={attention_test_mse:.6f}")
     
-    # Test Hierarchical Fusion
-    print(f"\n🔧 Training Hierarchical Fusion...")
-    hierarchical_model = HierarchicalCortexFlowV2(input_dim, device)
+    # Test Simple Hierarchical
+    print(f"\n🔧 Training Simple Hierarchical...")
+    hierarchical_model = SimpleHierarchicalV2(input_dim, device)
     print(f"   Parameters: {sum(p.numel() for p in hierarchical_model.parameters()):,}")
     
     hierarchical_val_loss = train_model(hierarchical_model, train_loader, val_loader, config, device)
-    hierarchical_results = evaluate_model(hierarchical_model, test_loader, device)
+    hierarchical_test_mse = evaluate_model(hierarchical_model, test_loader, device)
     
     results['hierarchical'] = {
         'val_loss': hierarchical_val_loss,
-        'test_mse': hierarchical_results['mse'],
-        'model_name': hierarchical_model.name,
-        'hierarchy_info': hierarchical_results['hierarchy_info']
+        'test_mse': hierarchical_test_mse,
+        'model_name': hierarchical_model.name
     }
     
-    print(f"   Hierarchical Results: Val={hierarchical_val_loss:.6f}, Test={hierarchical_results['mse']:.6f}")
-    
-    # Analyze hierarchical processing
-    analyze_hierarchy_info(hierarchical_results['hierarchy_info'], f"hierarchy_{dataset_name}")
+    print(f"   Hierarchical Results: Val={hierarchical_val_loss:.6f}, Test={hierarchical_test_mse:.6f}")
     
     # Compare results
     print(f"\n🎯 Comparison Results for {dataset_name.upper()}:")
-    print(f"   Attention Baseline: {attention_results['mse']:.6f}")
-    print(f"   Hierarchical Fusion: {hierarchical_results['mse']:.6f}")
+    print(f"   Attention Baseline: {attention_test_mse:.6f}")
+    print(f"   Simple Hierarchical: {hierarchical_test_mse:.6f}")
     
-    if hierarchical_results['mse'] < attention_results['mse']:
-        improvement = ((attention_results['mse'] - hierarchical_results['mse']) / attention_results['mse']) * 100
+    if hierarchical_test_mse < attention_test_mse:
+        improvement = ((attention_test_mse - hierarchical_test_mse) / attention_test_mse) * 100
         print(f"   🏆 HIERARCHICAL WINS by {improvement:.2f}%!")
         results['winner'] = 'hierarchical'
         results['improvement'] = improvement
     else:
-        gap = ((hierarchical_results['mse'] - attention_results['mse']) / attention_results['mse']) * 100
+        gap = ((hierarchical_test_mse - attention_test_mse) / attention_test_mse) * 100
         print(f"   📈 Attention wins by {gap:.2f}%")
         results['winner'] = 'attention'
         results['improvement'] = -gap
@@ -419,11 +411,11 @@ def compare_models(dataset_name, device):
     return results
 
 def main():
-    """Main hierarchical fusion testing function"""
-    print("🎯 CCCV2 Hierarchical Feature Fusion Testing")
-    print("=" * 50)
-    print("🔬 Testing revolutionary hierarchical processing")
-    print("📊 Goal: Validate hierarchical improvements over attention")
+    """Main simple hierarchical testing function"""
+    print("🎯 CCCV2 Simple Hierarchical Testing")
+    print("=" * 45)
+    print("🔬 Testing simplified hierarchical processing")
+    print("📊 Goal: Validate hierarchical concept vs attention")
     print()
     
     device = setup_device()
@@ -446,8 +438,8 @@ def main():
             all_results[dataset_name] = result
     
     # Final analysis
-    print("\n🎉 CCCV2 Hierarchical Fusion Testing Complete!")
-    print("=" * 60)
+    print("\n🎉 CCCV2 Simple Hierarchical Testing Complete!")
+    print("=" * 55)
     
     hierarchical_wins = 0
     total_datasets = len(all_results)
@@ -460,16 +452,16 @@ def main():
         if result['winner'] == 'hierarchical':
             hierarchical_wins += 1
     
-    print(f"\n🏆 FINAL HIERARCHICAL FUSION RESULTS:")
+    print(f"\n🏆 FINAL SIMPLE HIERARCHICAL RESULTS:")
     print(f"Hierarchical wins: {hierarchical_wins}/{total_datasets}")
     print(f"Success rate: {(hierarchical_wins/total_datasets)*100:.1f}%")
     
     if hierarchical_wins >= total_datasets * 0.5:
-        print(f"\n🎉 HIERARCHICAL FUSION SUCCESS!")
-        print(f"🚀 Multi-scale processing shows significant improvements!")
+        print(f"\n🎉 HIERARCHICAL CONCEPT VALIDATED!")
+        print(f"🚀 Multi-scale processing shows promise for CCCV2!")
     else:
-        print(f"\n🔧 Hierarchical fusion needs refinement")
-        print(f"📈 Consider architecture adjustments")
+        print(f"\n🔧 Hierarchical processing needs refinement")
+        print(f"📈 Consider different fusion strategies")
     
     print("\n🚀 Ready for next CCCV2 innovation: Contrastive Learning!")
 

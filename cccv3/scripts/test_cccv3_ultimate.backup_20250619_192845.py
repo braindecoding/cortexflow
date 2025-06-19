@@ -1,36 +1,17 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - test_cccv3_ultimate.py
-========================================================================
+CCCV3 Ultimate Adaptive Testing
+==============================
 
-This script has been updated to ensure academic integrity compliance:
+Test the CCCV3 Ultimate model with transfer learning and optimal hyperparameters.
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
+Features:
+1. Transfer learning from optimal individual models
+2. Adaptive strategy selection per dataset
+3. Optimal hyperparameters per pathway-dataset combination
+4. Template management for reusability
 
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Goal: Achieve best individual performance + adaptive efficiency
 """
-
-
 
 import os
 import sys
@@ -62,13 +43,7 @@ except ImportError:
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
 except ImportError:
     print("⚠️ Parent directory imports not available")
 
@@ -123,11 +98,6 @@ def test_ultimate_on_dataset(dataset_name, device, n_folds=5):
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None
@@ -160,13 +130,7 @@ def test_ultimate_on_dataset(dataset_name, device, n_folds=5):
     torch.cuda.empty_cache()
     
     # Cross-validation
-    kfold = 
-            # ACADEMIC INTEGRITY: Cross-validation methodology
-            # - Preprocessing performed within each fold
-            # - Training fold statistics used for validation fold
-            # - No data leakage across folds
-            
-            KFold(n_splits=n_folds, shuffle=True, random_state=42)
+    kfold = KFold(n_splits=n_folds, shuffle=True, random_state=42)
     
     config = {
         'use_optimal_hyperparams': True,

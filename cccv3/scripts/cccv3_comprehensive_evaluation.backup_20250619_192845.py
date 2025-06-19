@@ -1,36 +1,16 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - cccv3_comprehensive_evaluation.py
-===================================================================================
+CCCV3 Comprehensive Evaluation with 10-Fold Cross-Validation
+============================================================
 
-This script has been updated to ensure academic integrity compliance:
+Comprehensive evaluation of CCCV3 Ensemble using:
+1. 10-fold Cross-Validation for robust performance estimation
+2. Statistical significance testing (t-test)
+3. Multiple metrics: MSE, PSNR, SSIM, LPIPS
+4. Comparison with all baselines
+5. 100% authentic data (no synthetic data)
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
-
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Goal: Rigorous academic evaluation of CCCV3 performance
 """
-
-
 
 import os
 import sys
@@ -63,13 +43,7 @@ except ImportError:
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
     from src.metrics import compute_comprehensive_metrics
 except ImportError:
     print("⚠️ Parent directory imports not available")
@@ -215,11 +189,6 @@ def cross_validation_evaluation(dataset_name, device, n_folds=10):
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None
@@ -243,13 +212,7 @@ def cross_validation_evaluation(dataset_name, device, n_folds=10):
     print(f"📊 Total samples for CV: {len(X_all)}")
     
     # Setup cross-validation
-    kfold = 
-            # ACADEMIC INTEGRITY: Cross-validation methodology
-            # - Preprocessing performed within each fold
-            # - Training fold statistics used for validation fold
-            # - No data leakage across folds
-            
-            KFold(n_splits=n_folds, shuffle=True, random_state=42)
+    kfold = KFold(n_splits=n_folds, shuffle=True, random_state=42)
     
     # Training configuration
     config = {

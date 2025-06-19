@@ -1,36 +1,18 @@
 """
-ACADEMIC INTEGRITY COMPLIANT - vangerven_ensemble_refinement.py
-==================================================================================
+Vangerven Ensemble Refinement
+============================
 
-This script has been updated to ensure academic integrity compliance:
+Specialized approach to fix Vangerven ensemble performance issue.
 
-✅ DATA LEAKAGE ELIMINATED:
-   - Training statistics used for test set normalization
-   - No test set information leaked to training process
-   - Proper preprocessing order maintained
+Problem: CCCV3 ensemble (0.047117) worse than individual CLIP (0.036195)
+Goal: Achieve ensemble performance better than best individual
 
-✅ CROSS-VALIDATION INTEGRITY:
-   - Preprocessing performed within each CV fold
-   - Training fold statistics used for validation fold
-   - No information leakage across folds
-
-✅ REPRODUCIBILITY MAINTAINED:
-   - All random seeds properly set
-   - Deterministic operations ensured
-   - Results are reproducible
-
-✅ PUBLICATION READY:
-   - Results from this script meet academic integrity standards
-   - Safe for journal submission and peer review
-   - Methodology is transparent and ethical
-
-CRITICAL: This script eliminates the data leakage issues identified in
-the academic integrity audit. All results are now publication-ready.
-
-Original functionality preserved with corrected methodology.
+Strategies:
+1. Transfer learning from best individual models
+2. Dynamic ensemble weight optimization
+3. Vangerven-specific ensemble architecture
+4. Advanced fusion strategies
 """
-
-
 
 import os
 import sys
@@ -67,13 +49,7 @@ except ImportError:
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
-
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized
 except ImportError:
     print("⚠️ Parent directory imports not available")
 
@@ -368,11 +344,6 @@ def test_vangerven_refinement():
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized('vangerven', device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return
@@ -390,13 +361,7 @@ def test_vangerven_refinement():
     print(f"📊 Total samples: {len(X_all)}")
     
     # 5-fold CV for efficiency
-    kfold = 
-            # ACADEMIC INTEGRITY: Cross-validation methodology
-            # - Preprocessing performed within each fold
-            # - Training fold statistics used for validation fold
-            # - No data leakage across folds
-            
-            KFold(n_splits=5, shuffle=True, random_state=42)
+    kfold = KFold(n_splits=5, shuffle=True, random_state=42)
     
     config = {
         'epochs': 80,
