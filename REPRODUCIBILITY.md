@@ -9,7 +9,7 @@ CortexFlow CCCV1-CCCV4 implements **comprehensive reproducibility** untuk memast
 | Component | Status | Test Results |
 |-----------|--------|--------------|
 | **Basic Reproducibility** | ✅ PASSED | 5/5 tests (100%) |
-| **Dataset Loading** | ✅ PASSED | 2/2 datasets (100%) |
+| **Dataset Loading** | ✅ PASSED | 4/4 datasets (100%) |
 | **Cross-Validation** | ✅ PASSED | 3/3 CV tests (100%) |
 | **CCCV4 Models** | ✅ PASSED | 3/3 runs (100%) |
 | **Overall Success Rate** | ✅ **100%** | 4/4 test suites |
@@ -98,7 +98,7 @@ python test_reproducibility.py --test cccv4
 🎯 Goal: Ensure 100% reproducible results across all CCCV versions
 
 ✅ Basic reproducibility: PASSED (5/5 tests)
-✅ Dataset reproducibility: PASSED (2/2 datasets)  
+✅ Dataset reproducibility: PASSED (4/4 datasets)
 ✅ Cross-validation reproducibility: PASSED (3/3 tests)
 ✅ CCCV4 reproducibility: PASSED (3/3 runs)
 
@@ -116,7 +116,7 @@ OVERALL SUCCESS RATE: 4/4 (100.0%)
 
 #### **2. Dataset Loading Reproducibility**
 - **Test**: Load datasets multiple times with same preprocessing
-- **Datasets**: Miyawaki, Vangerven
+- **Datasets**: Miyawaki, Vangerven, MindBigData, Crell
 - **Results**: Identical checksums across 3 loads per dataset
 - **Status**: ✅ **PASSED**
 

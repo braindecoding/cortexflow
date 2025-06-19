@@ -67,7 +67,7 @@ def test_basic_reproducibility(seed=42, n_tests=3):
         print(f"   Results: {results}")
         return False
 
-def test_dataset_reproducibility(datasets=['miyawaki', 'vangerven'], seed=42):
+def test_dataset_reproducibility(datasets=['miyawaki', 'vangerven', 'mindbigdata', 'crell'], seed=42):
     """Test dataset loading reproducibility"""
     
     print("\n🧪 TESTING DATASET REPRODUCIBILITY")
@@ -246,7 +246,7 @@ def run_comprehensive_reproducibility_test():
     test_results['basic'] = test_basic_reproducibility(seed=42, n_tests=5)
     
     # 2. Dataset reproducibility
-    test_results['dataset'] = test_dataset_reproducibility(['miyawaki', 'vangerven'], seed=42)
+    test_results['dataset'] = test_dataset_reproducibility(['miyawaki', 'vangerven', 'mindbigdata', 'crell'], seed=42)
     
     # 3. Cross-validation reproducibility
     test_results['cross_validation'] = test_cross_validation_reproducibility('miyawaki', seed=42)
@@ -300,7 +300,7 @@ def main():
     elif args.test == 'basic':
         test_basic_reproducibility(seed=args.seed)
     elif args.test == 'dataset':
-        test_dataset_reproducibility(['miyawaki', 'vangerven'], seed=args.seed)
+        test_dataset_reproducibility(['miyawaki', 'vangerven', 'mindbigdata', 'crell'], seed=args.seed)
     elif args.test == 'cv':
         test_cross_validation_reproducibility('miyawaki', seed=args.seed)
     elif args.test == 'cccv4':
