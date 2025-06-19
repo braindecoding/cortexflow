@@ -140,7 +140,7 @@ All models validated with:
 
 - ✅ **Enhanced Reproducibility System**: Multi-level seed management
 - ✅ **Deterministic Operations**: PyTorch deterministic mode with CUDA support
-- ✅ **Cross-Validation Consistency**: Reproducible 5-fold CV splits
+- ✅ **Cross-Validation Consistency**: Reproducible 10-fold CV splits
 - ✅ **Environment Documentation**: Complete hardware/software tracking
 - ✅ **Comprehensive Testing**: 4/4 test suites passing (100% success rate)
 

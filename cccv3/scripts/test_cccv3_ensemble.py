@@ -213,27 +213,23 @@ def compare_with_baselines(result):
     dataset_name = result['dataset_name']
     ensemble_mse = result['ensemble_mse']
     
-    # Known baseline results from previous testing
+    # CCCV version results (inter-CCCV comparison only)
     baselines = {
         'miyawaki': {
             'CCCV1': 0.012326,
-            'CCCV2': 0.014374,
-            'Best_Individual': 0.008796  # Attention pathway
+            'CCCV2': 0.014374
         },
         'vangerven': {
             'CCCV1': 0.036487,
-            'CCCV2': 0.036926,
-            'Best_Individual': 0.036195  # CLIP pathway
+            'CCCV2': 0.036926
         },
         'mindbigdata': {
             'CCCV1': 0.058601,
-            'CCCV2': 0.056883,
-            'Best_Individual': 0.056781  # Attention pathway
+            'CCCV2': 0.056883
         },
         'crell': {
             'CCCV1': 0.032218,
-            'CCCV2': 0.032058,
-            'Best_Individual': 0.032119  # Attention pathway
+            'CCCV2': 0.032058
         }
     }
     

@@ -276,34 +276,30 @@ def compare_with_predictions_and_baselines(result):
     predictions = predict_cccv4_performance()
     prediction = predictions.get(dataset_name, {})
     
-    # All baseline results
+    # CCCV version results (inter-CCCV comparison only)
     baselines = {
         'miyawaki': {
             'CCCV1': 0.012326,
             'CCCV2': 0.014374,
             'CCCV3_Ultimate': 0.004474,
-            'Best_Individual': 0.008796,
             'Predicted_CCCV4': prediction.get('predicted_mse', 0.004474)
         },
         'vangerven': {
             'CCCV1': 0.036487,
             'CCCV2': 0.036926,
             'CCCV3_Ultimate': 0.039129,
-            'Best_Individual': 0.036195,
             'Predicted_CCCV4': prediction.get('predicted_mse', 0.036487)
         },
         'mindbigdata': {
             'CCCV1': 0.058601,
             'CCCV2': 0.056883,
             'CCCV3_Ultimate': 0.056162,
-            'Best_Individual': 0.056781,
             'Predicted_CCCV4': prediction.get('predicted_mse', 0.056162)
         },
         'crell': {
             'CCCV1': 0.032218,
             'CCCV2': 0.032058,
             'CCCV3_Ultimate': 0.032497,
-            'Best_Individual': 0.032119,
             'Predicted_CCCV4': prediction.get('predicted_mse', 0.032058)
         }
     }

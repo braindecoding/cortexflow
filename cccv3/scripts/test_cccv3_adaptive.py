@@ -209,29 +209,21 @@ def compare_with_baselines(result):
     dataset_name = result['dataset_name']
     adaptive_mse = result['cv_results']['mean_mse']
     
-    # Known baseline results
+    # CCCV version results (inter-CCCV comparison only)
     baselines = {
         'miyawaki': {
-            'Best_Individual': 0.008796,
-            'Original_Ensemble': 0.008999,
             'CCCV1': 0.012326,
             'CCCV2': 0.014374
         },
         'vangerven': {
-            'Best_Individual': 0.036195,
-            'Original_Ensemble': 0.047117,
             'CCCV1': 0.036487,
             'CCCV2': 0.036926
         },
         'mindbigdata': {
-            'Best_Individual': 0.056781,
-            'Original_Ensemble': 0.056999,
             'CCCV1': 0.058601,
             'CCCV2': 0.056883
         },
         'crell': {
-            'Best_Individual': 0.032119,
-            'Original_Ensemble': 0.032486,
             'CCCV1': 0.032218,
             'CCCV2': 0.032058
         }
