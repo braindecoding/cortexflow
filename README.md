@@ -137,7 +137,7 @@ If you use CortexFlow in your research, please cite:
   title={CortexFlow: Meta-Adaptive Neural Decoding Framework},
   author={CortexFlow Team},
   year={2024},
-  url={https://github.com/your-repo/cortexflow-fmri}
+  url={https://github.com/braindecoding/cortexflow-fmri}
 }
 ```
 
