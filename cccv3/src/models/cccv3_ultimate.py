@@ -237,25 +237,16 @@ class CCCV3UltimateModel(nn.Module):
             self.ensemble_weights = torch.tensor([0.0, 0.3, 0.7], device=self.device)
     
     def _create_model_with_transfer(self, pathway_name):
-        """Create model with transfer learning from template"""
-        
+        """Create model with transfer learning from template (DISABLED FOR DEBUG)"""
+
         # Create base model
         model = self.template_manager.create_optimal_template(
             pathway_name, self.input_dim, self.dataset_name, self.dataset_size
         )
-        
-        # Try to load template
-        template_data = self.template_manager.load_template(pathway_name, self.dataset_name)
-        
-        if template_data:
-            try:
-                model.load_state_dict(template_data['model_state_dict'])
-                print(f"      ✅ Loaded template: {pathway_name} (MSE: {template_data['performance']:.6f})")
-            except Exception as e:
-                print(f"      ⚠️ Template load failed for {pathway_name}: {e}")
-        else:
-            print(f"      📝 No template found for {pathway_name}, will train from scratch")
-        
+
+        # DISABLE TRANSFER LEARNING TO FIX OVERFITTING ISSUE
+        print(f"      🔧 Transfer learning DISABLED for {pathway_name} (debug mode)")
+
         return model
     
     def forward(self, x):
@@ -333,13 +324,9 @@ class CCCV3UltimateTrainer:
                 model, train_loader, val_loader, config, pathway_name
             )
             
-            # Save as template if performance is good
-            if result['best_val_loss'] <= self.template_manager.performance_targets.get(
-                self.model.dataset_name, {}
-            ).get(pathway_name, float('inf')) * 1.1:  # Within 10% of target
-                self.template_manager.save_template(
-                    model, pathway_name, self.model.dataset_name, result['best_val_loss']
-                )
+            # DISABLE TEMPLATE SAVING TO FIX OVERFITTING ISSUE
+            # Template saving disabled for debug mode
+            print(f"      🔧 Template saving DISABLED for {pathway_name} (debug mode)")
             
             return {
                 'strategy': self.strategy,
@@ -358,13 +345,9 @@ class CCCV3UltimateTrainer:
                 )
                 results[pathway_name] = result
                 
-                # Save as template if performance is good
-                if result['best_val_loss'] <= self.template_manager.performance_targets.get(
-                    self.model.dataset_name, {}
-                ).get(pathway_name, float('inf')) * 1.1:
-                    self.template_manager.save_template(
-                        model, pathway_name, self.model.dataset_name, result['best_val_loss']
-                    )
+                # DISABLE TEMPLATE SAVING TO FIX OVERFITTING ISSUE
+                # Template saving disabled for debug mode
+                print(f"      🔧 Template saving DISABLED for {pathway_name} (debug mode)")
             
             return {
                 'strategy': self.strategy,

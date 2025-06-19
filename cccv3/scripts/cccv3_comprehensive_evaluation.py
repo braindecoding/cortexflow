@@ -61,15 +61,14 @@ except ImportError:
         print("❌ Could not import CCCV3 ensemble model")
         sys.exit(1)
 
-# Import utilities
-try:
-    
 # ACADEMIC INTEGRITY COMPLIANCE
 # =============================
 # This script has been updated to use academic integrity compliant preprocessing
 # that eliminates data leakage. All results from this script are publication-ready.
 
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+# Import utilities
+try:
+    from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
     from src.metrics import compute_comprehensive_metrics
 except ImportError:
     print("⚠️ Parent directory imports not available")
@@ -215,11 +214,11 @@ def cross_validation_evaluation(dataset_name, device, n_folds=10):
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
+
+            # ACADEMIC INTEGRITY VERIFICATION
+            print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
+            print("   ✅ Training statistics used for test set normalization")
+            print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None
@@ -243,13 +242,11 @@ def cross_validation_evaluation(dataset_name, device, n_folds=10):
     print(f"📊 Total samples for CV: {len(X_all)}")
     
     # Setup cross-validation
-    kfold = 
-            # ACADEMIC INTEGRITY: Cross-validation methodology
-            # - Preprocessing performed within each fold
-            # - Training fold statistics used for validation fold
-            # - No data leakage across folds
-            
-            KFold(n_splits=n_folds, shuffle=True, random_state=42)
+    # ACADEMIC INTEGRITY: Cross-validation methodology
+    # - Preprocessing performed within each fold
+    # - Training fold statistics used for validation fold
+    # - No data leakage across folds
+    kfold = KFold(n_splits=n_folds, shuffle=True, random_state=42)
     
     # Training configuration
     config = {

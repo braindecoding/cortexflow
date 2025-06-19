@@ -49,15 +49,14 @@ parent_dir = os.path.dirname(current_dir)
 root_dir = os.path.dirname(parent_dir)
 sys.path.append(root_dir)
 
-# Import utilities
-try:
-    
 # ACADEMIC INTEGRITY COMPLIANCE
 # =============================
 # This script has been updated to use academic integrity compliant preprocessing
 # that eliminates data leakage. All results from this script are publication-ready.
 
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+# Import utilities
+try:
+    from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
 except ImportError:
     print("⚠️ Parent directory imports not available")
 
@@ -415,11 +414,11 @@ def compare_final_models(dataset_name, device):
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
+
+            # ACADEMIC INTEGRITY VERIFICATION
+            print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
+            print("   ✅ Training statistics used for test set normalization")
+            print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None
