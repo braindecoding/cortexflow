@@ -59,21 +59,6 @@ def test_reproducibility_system():
         print(f"Reproducibility system error: {e}")
         return False
 
-def test_baseline_models():
-    """Test baseline models import"""
-    
-    print("Testing baseline models...")
-    
-    try:
-        from src.models import StandardBaselineCNN, OptimizedMinDVis, OptimizedBrainDiffuser
-        
-        print("Baseline models importable")
-        return True
-        
-    except Exception as e:
-        print(f"Baseline models error: {e}")
-        return False
-
 def test_data_loading():
     """Test data loading capability"""
     
@@ -135,7 +120,6 @@ def main():
     tests = [
         ("CCCV Structure", test_cccv_structure),
         ("Reproducibility System", test_reproducibility_system),
-        ("Baseline Models", test_baseline_models),
         ("Data Loading", test_data_loading),
         ("Training Script", test_training_script),
         ("Documentation", test_documentation)

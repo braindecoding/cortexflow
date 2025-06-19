@@ -348,36 +348,32 @@ def test_cccv4_proxy_on_dataset(dataset_name, device, n_folds=10):
 
 def compare_with_all_versions(result):
     """Compare CCCV4 proxy with all CCCV versions"""
-    
+
     dataset_name = result['dataset_name']
     cccv4_mse = result['cv_results']['mean_mse']
     selected_version = result['selection_info']['selected_version']
-    
-    # All version results
+
+    # CCCV version results (inter-CCCV comparison only)
     all_versions = {
         'miyawaki': {
             'CCCV1': 0.012326,
             'CCCV2': 0.014374,
-            'CCCV3_Ultimate': 0.004474,
-            'Best_Individual': 0.008796
+            'CCCV3_Ultimate': 0.004474
         },
         'vangerven': {
             'CCCV1': 0.036487,
             'CCCV2': 0.036926,
-            'CCCV3_Ultimate': 0.039129,
-            'Best_Individual': 0.036195
+            'CCCV3_Ultimate': 0.039129
         },
         'mindbigdata': {
             'CCCV1': 0.058601,
             'CCCV2': 0.056883,
-            'CCCV3_Ultimate': 0.056162,
-            'Best_Individual': 0.056781
+            'CCCV3_Ultimate': 0.056162
         },
         'crell': {
             'CCCV1': 0.032218,
             'CCCV2': 0.032058,
-            'CCCV3_Ultimate': 0.032497,
-            'Best_Individual': 0.032119
+            'CCCV3_Ultimate': 0.032497
         }
     }
     
