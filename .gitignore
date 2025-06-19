@@ -1,0 +1,205 @@
+# CortexFlow CCCV1-CCCV4 .gitignore
+# ===================================
+
+# Dataset Files (Large Files)
+# ============================
+data/processed/
+data/raw/
+data/external/
+!data/README.md
+!data/.gitkeep
+
+# Processed Dataset Files
+data/processed/*.mat
+data/processed/*.npy
+data/processed/*.pkl
+data/processed/*.h5
+data/processed/*.hdf5
+
+# Raw Dataset Files  
+data/raw/*.mat
+data/raw/*.npy
+data/raw/*.txt
+data/raw/*.csv
+data/raw/*.pkl
+
+# External Dataset Files
+data/external/
+!data/external/README.md
+
+# Model Checkpoints and Weights
+# ==============================
+*.pth
+*.pt
+*.ckpt
+*.pkl
+*.joblib
+*.model
+*.weights
+*.h5
+
+# Model directories
+models/
+checkpoints/
+weights/
+saved_models/
+
+# Results and Outputs
+# ===================
+results/
+outputs/
+logs/
+runs/
+wandb/
+tensorboard/
+mlruns/
+
+# Temporary and Cache Files
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+# ====================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+.env
+.conda/
+conda-meta/
+
+# IDE and Editor Files
+# ====================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebooks
+# ==================
+.ipynb_checkpoints/
+*.ipynb
+
+# System Files
+# ============
+*.log
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+*.rej
+
+# GPU and CUDA
+# =============
+*.cu
+*.cuh
+
+# Documentation Build
+# ===================
+docs/_build/
+docs/build/
+site/
+
+# Testing
+# =======
+.coverage
+.pytest_cache/
+.tox/
+htmlcov/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Reproducibility Reports
+# =======================
+reproducibility_reports/
+*.json
+
+# Large Files (>50MB)
+# ===================
+*.zip
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+
+# Specific CortexFlow Files
+# =========================
+# Training outputs
+training_logs/
+validation_results/
+test_results/
+evaluation_outputs/
+
+# Visualization outputs
+figures/generated/
+plots/
+visualizations/
+
+# Configuration backups
+configs/backup/
+*.config.bak
+
+# Temporary experiment files
+experiments/
+temp_experiments/
+scratch/
+
+# Performance profiling
+*.prof
+*.profile
+
+# Memory dumps
+*.dump
+*.dmp
+
+# Large numpy arrays
+*.npy
+*.npz
+
+# Large pandas dataframes
+*.feather
+*.parquet
+
+# Note: Keep essential documentation and configuration files
+!README.md
+!LICENSE
+!requirements.txt
+!setup.py
+!pyproject.toml
+!environment.yml
+!Dockerfile
+!.github/
+!docs/
+!tests/
+!configs/*.yaml
+!configs/*.yml
+!configs/*.json
+!**/README.md
