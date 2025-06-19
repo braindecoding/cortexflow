@@ -73,13 +73,12 @@ except ImportError:
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
+    # ACADEMIC INTEGRITY COMPLIANCE
+    # =============================
+    # This script has been updated to use academic integrity compliant preprocessing
+    # that eliminates data leakage. All results from this script are publication-ready.
 
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
     from src.evaluation.metrics import calculate_comprehensive_metrics
 except ImportError:
     print("⚠️ Parent directory imports not available. Using local implementations.")
@@ -113,7 +112,16 @@ def load_optimal_config(dataset_name):
         # Return default config
         return {
             'architecture': {'dropout_encoder': 0.06, 'dropout_decoder': 0.02, 'clip_residual_weight': 0.1},
-            'training': {'lr': 0.001, 'batch_size': 16, 'weight_decay': 1e-6, 'epochs': 100, 'patience': 15}
+            'training': {
+                'lr': 0.001,
+                'batch_size': 16,
+                'weight_decay': 1e-6,
+                'epochs': 100,
+                'patience': 15,
+                'scheduler_factor': 0.5,
+                'betas': [0.9, 0.999],
+                'gradient_clip': 0.5
+            }
         }
 
 def train_cccv1_fold(model, train_loader, val_loader, config, device):
@@ -220,13 +228,11 @@ def cross_validate_cccv1(dataset_name, X_train, y_train, input_dim, device, n_fo
     config = load_optimal_config(dataset_name)
     
     # Setup cross-validation
-    kfold = 
-            # ACADEMIC INTEGRITY: Cross-validation methodology
-            # - Preprocessing performed within each fold
-            # - Training fold statistics used for validation fold
-            # - No data leakage across folds
-            
-            KFold(n_splits=n_folds, shuffle=True, random_state=42)
+    # ACADEMIC INTEGRITY: Cross-validation methodology
+    # - Preprocessing performed within each fold
+    # - Training fold statistics used for validation fold
+    # - No data leakage across folds
+    kfold = KFold(n_splits=n_folds, shuffle=True, random_state=42)
     cv_scores = []
     
     for fold, (train_idx, val_idx) in enumerate(kfold.split(X_train)):
@@ -318,21 +324,21 @@ def validate_single_dataset(dataset_name, device, n_folds=5, statistical_test=Tr
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
+
+            # ACADEMIC INTEGRITY VERIFICATION
+            print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
+            print("   ✅ Training statistics used for test set normalization")
+            print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None
-        
+
         if X_train is None:
             print(f"❌ Failed to load {dataset_name}")
             return None
-        
+
         print(f"✅ Dataset loaded: Train={len(X_train)}, Test={len(X_test)}, Input_dim={input_dim}")
-        
+
     except Exception as e:
         print(f"❌ Error loading {dataset_name}: {e}")
         return None

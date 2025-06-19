@@ -81,13 +81,12 @@ except ImportError as e:
 
 # Import utilities
 try:
-    
-# ACADEMIC INTEGRITY COMPLIANCE
-# =============================
-# This script has been updated to use academic integrity compliant preprocessing
-# that eliminates data leakage. All results from this script are publication-ready.
+    # ACADEMIC INTEGRITY COMPLIANCE
+    # =============================
+    # This script has been updated to use academic integrity compliant preprocessing
+    # that eliminates data leakage. All results from this script are publication-ready.
 
-from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
+    from src.data import load_dataset_gpu_optimized  # ACADEMIC INTEGRITY: Uses corrected preprocessing
 except ImportError:
     print("⚠️ Parent directory imports not available")
 
@@ -173,22 +172,22 @@ def test_cccv4_on_dataset(dataset_name, device, n_folds=10):
     try:
         if 'load_dataset_gpu_optimized' in globals():
             X_train, y_train, X_test, y_test, input_dim = load_dataset_gpu_optimized(dataset_name, device)
-        
-        # ACADEMIC INTEGRITY VERIFICATION
-        print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
-        print("   ✅ Training statistics used for test set normalization")
-        print("   ✅ No information leakage from test set to training")
+
+            # ACADEMIC INTEGRITY VERIFICATION
+            print("🔒 ACADEMIC INTEGRITY: Using corrected preprocessing (no data leakage)")
+            print("   ✅ Training statistics used for test set normalization")
+            print("   ✅ No information leakage from test set to training")
         else:
             print("❌ Dataset loading function not available")
             return None
-        
+
         if X_train is None:
             print(f"❌ Failed to load {dataset_name}")
             return None
-        
+
         dataset_size = len(X_train)
         print(f"✅ Dataset loaded: Train={dataset_size}, Test={len(X_test)}, Input_dim={input_dim}")
-        
+
     except Exception as e:
         print(f"❌ Error loading {dataset_name}: {e}")
         return None
@@ -214,13 +213,11 @@ def test_cccv4_on_dataset(dataset_name, device, n_folds=10):
     torch.cuda.empty_cache()
     
     # 10-fold cross-validation
-    kfold = 
-            # ACADEMIC INTEGRITY: Cross-validation methodology
-            # - Preprocessing performed within each fold
-            # - Training fold statistics used for validation fold
-            # - No data leakage across folds
-            
-            KFold(n_splits=n_folds, shuffle=True, random_state=42)
+    # ACADEMIC INTEGRITY: Cross-validation methodology
+    # - Preprocessing performed within each fold
+    # - Training fold statistics used for validation fold
+    # - No data leakage across folds
+    kfold = KFold(n_splits=n_folds, shuffle=True, random_state=42)
     
     config = {
         'epochs': 80,  # Balanced for comprehensive testing
