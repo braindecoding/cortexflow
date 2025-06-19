@@ -205,7 +205,7 @@ def setup_full_reproducibility(seed=42, strict_mode=True, save_report=True):
     
     return manager
 
-def create_reproducible_cross_validation(n_splits=5, n_runs=3, base_seed=42):
+def create_reproducible_cross_validation(n_splits=10, n_runs=3, base_seed=42):
     """
     Create reproducible cross-validation setup
     

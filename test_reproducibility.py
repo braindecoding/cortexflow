@@ -198,7 +198,7 @@ def test_cross_validation_reproducibility(dataset_name='miyawaki', seed=42):
             setup_full_reproducibility(seed=seed, strict_mode=True, save_report=False)
             
             # Create KFold
-            kfold = KFold(n_splits=5, shuffle=True, random_state=seed)
+            kfold = KFold(n_splits=10, shuffle=True, random_state=seed)
             
             # Get fold splits
             splits = list(kfold.split(X_np))

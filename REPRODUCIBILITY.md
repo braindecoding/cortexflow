@@ -10,7 +10,7 @@ CortexFlow CCCV1-CCCV4 implements **comprehensive reproducibility** untuk memast
 |-----------|--------|--------------|
 | **Basic Reproducibility** | ✅ PASSED | 5/5 tests (100%) |
 | **Dataset Loading** | ✅ PASSED | 4/4 datasets (100%) |
-| **Cross-Validation** | ✅ PASSED | 3/3 CV tests (100%) |
+| **Cross-Validation** | ✅ PASSED | 10-fold CV (100%) |
 | **CCCV4 Models** | ✅ PASSED | 3/3 runs (100%) |
 | **Overall Success Rate** | ✅ **100%** | 4/4 test suites |
 
@@ -55,7 +55,7 @@ os.environ['OMP_NUM_THREADS'] = '1'
 from sklearn.model_selection import KFold
 
 # Reproducible CV setup
-kfold = KFold(n_splits=5, shuffle=True, random_state=42)
+kfold = KFold(n_splits=10, shuffle=True, random_state=42)
 ```
 
 ---
@@ -99,7 +99,7 @@ python test_reproducibility.py --test cccv4
 
 ✅ Basic reproducibility: PASSED (5/5 tests)
 ✅ Dataset reproducibility: PASSED (4/4 datasets)
-✅ Cross-validation reproducibility: PASSED (3/3 tests)
+✅ Cross-validation reproducibility: PASSED (10-fold CV)
 ✅ CCCV4 reproducibility: PASSED (3/3 runs)
 
 OVERALL SUCCESS RATE: 4/4 (100.0%)
@@ -121,8 +121,8 @@ OVERALL SUCCESS RATE: 4/4 (100.0%)
 - **Status**: ✅ **PASSED**
 
 #### **3. Cross-Validation Reproducibility**
-- **Test**: Generate same CV folds with same random_state
-- **Results**: Identical train/val splits across 3 independent setups
+- **Test**: Generate same 10-fold CV splits with same random_state
+- **Results**: Identical train/val splits across multiple independent setups
 - **Status**: ✅ **PASSED**
 
 #### **4. CCCV4 Model Reproducibility**

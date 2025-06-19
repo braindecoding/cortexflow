@@ -121,7 +121,7 @@ cortexflow-fmri/
 ### 🔬 Scientific Validation
 
 All models validated with:
-- ✅ **5-fold cross-validation** for robust performance estimation
+- ✅ **10-fold cross-validation** for robust performance estimation
 - ✅ **Statistical significance testing** (t-tests, p-values, effect sizes)
 - ✅ **Multiple metrics** (MSE, PSNR, SSIM, LPIPS)
 - ✅ **100% authentic data** (no synthetic data)
