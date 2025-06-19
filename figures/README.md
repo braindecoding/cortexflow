@@ -1,54 +1,15 @@
 
-# 🔒 ACADEMIC INTEGRITY COMPLIANCE NOTICE
-
-**⚠️ CRITICAL UPDATE - 2025-06-19**
-
-This document has been updated to ensure academic integrity compliance.
-
-## **Methodology Correction**
-- **Previous methodology**: Had data leakage (test set statistics used for test normalization)
-- **Corrected methodology**: Uses training statistics for both training and test normalization
-- **Impact**: Previous results were optimistically biased and invalid for publication
-
-## **Result Status**
-- **❌ Results before 2025-06-19 19:30**: INVALID (data leakage present)
-- **✅ Results after 2025-06-19 19:30**: VALID (academic integrity compliant)
-
-## **Publication Readiness**
-- **Previous results**: NOT suitable for publication or peer review
-- **Current results**: READY for journal submission and academic use
-
----
-
 # CortexFlow CCCV1-CCCV4 Architecture Figures
 
-This directory contains publication-ready architecture diagrams for CCCV1-CCCV4 models.
+This directory contains publication-ready architecture diagrams and methodology figures for CCCV1-CCCV4 models.
+
+## 🎯 Repository Focus
+This directory contains **ONLY** figures relevant to CCCV1-CCCV4 models. No SOTA comparisons or external method references.
 
 ## Available Figures
 
 
 
-## 🔬 **CORRECTED METHODOLOGY (Academic Integrity Compliant)**
-
-### **Data Preprocessing**
-- **Training Statistics**: Computed from training set only
-- **Test Normalization**: Uses training statistics (eliminates data leakage)
-- **Cross-Validation**: Preprocessing performed within each fold
-- **Academic Integrity**: Verified and compliant
-
-### **Key Improvements**
-1. **Eliminated Data Leakage**: No test set information used in training
-2. **Proper CV**: Preprocessing within folds prevents information leakage
-3. **Reproducible**: All random seeds set for consistent results
-4. **Publication Ready**: Methodology meets academic integrity standards
-
-### **Previous vs Current Methodology**
-| Aspect | Previous (INVALID) | Current (VALID) |
-|--------|-------------------|-----------------|
-| Test Normalization | Test set statistics | Training statistics |
-| CV Preprocessing | Before split | Within each fold |
-| Data Leakage | Present | Eliminated |
-| Publication Status | Not suitable | Ready |
 
 
 #### 1. Dataset Overview
@@ -73,27 +34,6 @@ This directory contains publication-ready architecture diagrams for CCCV1-CCCV4 
 
 
 
-## 🔬 **CORRECTED METHODOLOGY (Academic Integrity Compliant)**
-
-### **Data Preprocessing**
-- **Training Statistics**: Computed from training set only
-- **Test Normalization**: Uses training statistics (eliminates data leakage)
-- **Cross-Validation**: Preprocessing performed within each fold
-- **Academic Integrity**: Verified and compliant
-
-### **Key Improvements**
-1. **Eliminated Data Leakage**: No test set information used in training
-2. **Proper CV**: Preprocessing within folds prevents information leakage
-3. **Reproducible**: All random seeds set for consistent results
-4. **Publication Ready**: Methodology meets academic integrity standards
-
-### **Previous vs Current Methodology**
-| Aspect | Previous (INVALID) | Current (VALID) |
-|--------|-------------------|-----------------|
-| Test Normalization | Test set statistics | Training statistics |
-| CV Preprocessing | Before split | Within each fold |
-| Data Leakage | Present | Eliminated |
-| Publication Status | Not suitable | Ready |
 
 
 ### Results and Analysis Figures
@@ -147,11 +87,10 @@ Advanced fMRI-to-Image Reconstruction with Reproducible Methodology
 
 ## Note
 
-This directory contains only figures relevant to CCCV1-CCCV4 models.
-For SOTA baseline comparisons, switch to the 'sota-comparison' branch.
+This directory contains **ONLY** figures relevant to CCCV1-CCCV4 models. No SOTA comparisons included.
 
-CCCV-specific architecture diagrams are located in their respective directories:
-- CCCV1: `cccv1/docs/figures/`
-- CCCV2: `cccv2/docs/figures/`
-- CCCV3: `cccv3/docs/figures/`
-- CCCV4: `cccv4/visualizations/`
+CCCV-specific architecture diagrams and results are located in their respective directories:
+- CCCV1: `results/cccv1/{dataset}/visualizations/`
+- CCCV2: `results/cccv2/{dataset}/visualizations/`
+- CCCV3: `results/cccv3/{dataset}/visualizations/`
+- CCCV4: `results/cccv4/{dataset}/visualizations/`
